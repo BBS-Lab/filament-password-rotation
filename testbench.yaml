@@ -1,0 +1,29 @@
+laravel: '@testbench'
+
+providers:
+  - BBSLab\FilamentPasswordRotation\FilamentPasswordRotationServiceProvider
+  - Workbench\App\Providers\AdminPanelProvider
+
+migrations:
+  - workbench/database/migrations
+
+workbench:
+  start: /admin
+  install: true
+  discovers:
+    web: true
+  build:
+    - asset-publish
+    - filament:assets
+    - filament:translations
+    - create-sqlite-db
+    - db:wipe
+    - migrate:refresh
+    - db:seed:
+        --class: 'Workbench\Database\Seeders\DatabaseSeeder'
+  sync: []
+
+purge:
+  directories:
+    - lang/*
+    - public/vendor/*

@@ -1,0 +1,30 @@
+name: mutation
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/**', 'tests/**', 'composer.json']
+  pull_request:
+    branches: [main]
+    paths: ['src/**', 'tests/**', 'composer.json']
+
+jobs:
+  mutation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, bcmath, intl, fileinfo, sqlite3, pdo_sqlite
+          coverage: pcov
+
+      - name: Install Composer dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Run mutation tests
+        run: composer test-mutation

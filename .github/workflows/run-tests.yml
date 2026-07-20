@@ -1,0 +1,49 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Primary target: latest everything, enforces 100% coverage.
+          - { name: 'Filament 5 / Laravel 13 / PHP 8.4', php: '8.4', filament: '^5.0', extra: '', coverage: true }
+          # Filament 5 on the lowest supported PHP.
+          - { name: 'Filament 5 / Laravel 13 / PHP 8.3', php: '8.3', filament: '^5.0', extra: '', coverage: false }
+          # Filament 5 on Laravel 12.
+          - { name: 'Filament 5 / Laravel 12 / PHP 8.4', php: '8.4', filament: '^5.0', extra: '--with=laravel/framework:^12.0 --with=orchestra/testbench:^10.0', coverage: false }
+          # Filament 5 on the lowest supported Laravel.
+          - { name: 'Filament 5 / Laravel 11 / PHP 8.3', php: '8.3', filament: '^5.0', extra: '--with=laravel/framework:^11.0 --with=orchestra/testbench:^9.0', coverage: false }
+          # Filament 4 (shares the Filament\Schemas API with v5, so no shim needed).
+          - { name: 'Filament 4 / Laravel 11 / PHP 8.4', php: '8.4', filament: '^4.0', extra: '--with=laravel/framework:^11.0 --with=orchestra/testbench:^9.0 --with-all-dependencies', coverage: false }
+
+    name: ${{ matrix.name }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, bcmath, intl, fileinfo, sqlite3, pdo_sqlite
+          coverage: pcov
+
+      - name: Install Composer dependencies
+        run: composer update --with="filament/filament:${{ matrix.filament }}" ${{ matrix.extra }} --prefer-dist --no-interaction --no-progress
+
+      - name: Run tests
+        run: ${{ matrix.coverage && 'composer test-coverage' || 'vendor/bin/pest' }}
