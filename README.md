@@ -228,6 +228,12 @@ never plaintext. Reuse checks run through `Hash::check`. `Hash::make` is idempot
 cast, so passwords stay single-hashed. If you discover a security issue, please email
 `paris@big-boss-studio.com` instead of using the issue tracker.
 
+## Nova
+
+Using [Laravel Nova](https://nova.laravel.com) instead of Filament? Its twin,
+[`bbs-lab/nova-password-rotation`](https://github.com/BBS-Lab/nova-password-rotation), brings the same
+password rotation to Nova.
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for what has changed recently.

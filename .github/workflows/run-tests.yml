@@ -24,7 +24,8 @@ jobs:
           - { name: 'Filament 5 / Laravel 13 / PHP 8.3', php: '8.3', filament: '^5.0', extra: '', coverage: false }
           # Filament 5 on Laravel 12.
           - { name: 'Filament 5 / Laravel 12 / PHP 8.4', php: '8.4', filament: '^5.0', extra: '--with=laravel/framework:^12.0 --with=orchestra/testbench:^10.0', coverage: false }
-          # Filament 5 on the lowest supported Laravel.
+          # Filament 5 on the lowest supported Laravel. Runtime floor is PHP 8.2,
+          # but Pest 4 (dev) requires 8.3, so 8.3 is the lowest CI can exercise.
           - { name: 'Filament 5 / Laravel 11 / PHP 8.3', php: '8.3', filament: '^5.0', extra: '--with=laravel/framework:^11.0 --with=orchestra/testbench:^9.0', coverage: false }
           # Filament 4 (shares the Filament\Schemas API with v5, so no shim needed).
           - { name: 'Filament 4 / Laravel 11 / PHP 8.4', php: '8.4', filament: '^4.0', extra: '--with=laravel/framework:^11.0 --with=orchestra/testbench:^9.0 --with-all-dependencies', coverage: false }
