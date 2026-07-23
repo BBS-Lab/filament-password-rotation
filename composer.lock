@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "06c82f5b5dd4e92102133361f6e25190",
+    "content-hash": "d9189994012baae9e5050f38312114fd",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -70,6 +70,80 @@
                 "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.3.10"
             },
             "time": "2026-06-20T14:30:25+00:00"
+        },
+        {
+            "name": "bbs-lab/laravel-password-rotation",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BBS-Lab/laravel-password-rotation.git",
+                "reference": "527037e91685fbef2ec69367484c3b6bc0ae4c87"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BBS-Lab/laravel-password-rotation/zipball/527037e91685fbef2ec69367484c3b6bc0ae4c87",
+                "reference": "527037e91685fbef2ec69367484c3b6bc0ae4c87",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^11.0 || ^12.0 || ^13.0",
+                "illuminate/support": "^11.0 || ^12.0 || ^13.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.18",
+                "nunomaduro/collision": "^8.0",
+                "orchestra/testbench": "^9.0 || ^10.0 || ^11.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-arch": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "pestphp/pest-plugin-mutate": "^4.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "BBSLab\\LaravelPasswordRotation\\LaravelPasswordRotationServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "BBSLab\\LaravelPasswordRotation\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mikaël Popowicz",
+                    "email": "mikael.popowicz@big-boss-studio.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Password rotation for any Laravel app (no admin panel required): force any authenticatable to rotate its password every N days, with reuse prevention, a first-login gate, expiry warnings and a redirect middleware.",
+            "homepage": "https://github.com/BBS-Lab/laravel-password-rotation",
+            "keywords": [
+                "bbs",
+                "laravel",
+                "middleware",
+                "password",
+                "password-expiration",
+                "password-rotation",
+                "security"
+            ],
+            "support": {
+                "issues": "https://github.com/BBS-Lab/laravel-password-rotation/issues",
+                "source": "https://github.com/BBS-Lab/laravel-password-rotation"
+            },
+            "time": "2026-07-23T15:05:32+00:00"
         },
         {
             "name": "blade-ui-kit/blade-heroicons",

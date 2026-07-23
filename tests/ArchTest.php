@@ -13,7 +13,3 @@ arch('the whole package declares strict types')
 arch('no class in the package is declared final')
     ->expect('BBSLab\FilamentPasswordRotation')
     ->not->toBeFinal();
-
-arch('the contract is an interface')
-    ->expect('BBSLab\FilamentPasswordRotation\Contracts\MustRotatePassword')
-    ->toBeInterface();

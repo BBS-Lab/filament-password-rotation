@@ -58,14 +58,17 @@ The service provider auto-registers via Laravel package discovery. The `password
 runs automatically. Publish the config and translations if you want to tweak them:
 
 ```bash
-# Config
+# Filament-specific config (slug, expiry_action)
 php artisan vendor:publish --tag=filament-password-rotation-config
+
+# Base rotation config (days, history_count, warn_days, …)
+php artisan vendor:publish --tag=laravel-password-rotation-config
 
 # Translations (en, fr)
 php artisan vendor:publish --tag=filament-password-rotation-translations
 
 # The users-table migration stub (adds the rotation column) — edit it per table before migrating
-php artisan vendor:publish --tag=filament-password-rotation-user-migration
+php artisan vendor:publish --tag=laravel-password-rotation-user-migration
 
 php artisan migrate
 ```
@@ -99,8 +102,8 @@ clean hook to inject a page route into every panel, so registration is always ex
 Add the interface and trait to the authenticatable model you want to rotate:
 
 ```php
-use BBSLab\FilamentPasswordRotation\Concerns\RotatesPassword;
-use BBSLab\FilamentPasswordRotation\Contracts\MustRotatePassword;
+use BBSLab\LaravelPasswordRotation\Concerns\RotatesPassword;
+use BBSLab\LaravelPasswordRotation\Contracts\MustRotatePassword;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements MustRotatePassword
@@ -117,7 +120,9 @@ done — expired users are redirected on their next full page load in the panel.
 
 ## Configuration
 
-Every key lives in `config/filament-password-rotation.php` and is driven by an environment variable.
+The generic rotation keys live in the base package's `config/laravel-password-rotation.php`; the
+Filament-specific keys (`slug`, `expiry_action`) live in `config/filament-password-rotation.php`. All
+are driven by an environment variable.
 
 | Config key                 | Env var                              | Default                | Description                                                                                                    |
 | -------------------------- | ------------------------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -130,6 +135,7 @@ Every key lives in `config/filament-password-rotation.php` and is driven by an e
 | `history_count`            | `PASSWORD_ROTATION_HISTORY_COUNT`    | `3`                    | Number of previous (hashed) passwords remembered and rejected. `0` disables history entirely.                  |
 | `warn_days`                | `PASSWORD_ROTATION_WARN_DAYS`        | `7`                    | Show a Filament notice this many days before expiry. `0` disables the warning.                                 |
 | `slug`                     | `PASSWORD_ROTATION_SLUG`             | `password/rotate`      | The change screen lives at `{panel}/{slug}`. A `/` becomes a `.` in the route name. Change only on a collision.|
+| `expiry_action`            | `PASSWORD_ROTATION_EXPIRY_ACTION`    | `change`               | `change` shows the in-panel change form; `reset` shows a button that emails a reset link and signs the user out. `reset` requires the model to implement `CanResetPassword`.|
 | `models`                   | —                                    | `['App\Models\User']`  | Models scanned by `password-rotation:report`. The middleware does **not** use this list.                       |
 
 > The `slug` must be set before the panel registers its routes — via the published config file, an
@@ -157,7 +163,7 @@ When `history_count > 0`, every password change is hashed and stored in the poly
 those previous passwords, and always rejects reusing the current one. You can reuse the rule directly:
 
 ```php
-use BBSLab\FilamentPasswordRotation\Rules\PasswordNotReused;
+use BBSLab\LaravelPasswordRotation\Rules\PasswordNotReused;
 
 $request->validate([
     'password' => ['required', 'confirmed', new PasswordNotReused($user)],
@@ -178,7 +184,7 @@ on each page load while inside the window and stays inert otherwise.
 
 ### The `password-rotation:report` command
 
-Audit the accounts declared in `config('filament-password-rotation.models')`:
+Audit the accounts declared in `config('laravel-password-rotation.models')`:
 
 ```bash
 # Only accounts that are expired or expiring within warn_days
@@ -197,7 +203,7 @@ Dispatched after a password change is persisted (not on the initial create). Lis
 notify, or revoke sessions:
 
 ```php
-use BBSLab\FilamentPasswordRotation\Events\PasswordRotated;
+use BBSLab\LaravelPasswordRotation\Events\PasswordRotated;
 use Illuminate\Support\Facades\Event;
 
 Event::listen(function (PasswordRotated $event) {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BBSLab\FilamentPasswordRotation\Http\Middleware;
 
-use BBSLab\FilamentPasswordRotation\Contracts\MustRotatePassword;
 use BBSLab\FilamentPasswordRotation\Filament\Pages\ForcePasswordChange;
+use BBSLab\LaravelPasswordRotation\Contracts\MustRotatePassword;
 use Closure;
 use Filament\Facades\Filament;
 use Filament\Panel;
@@ -19,7 +19,7 @@ class EnsurePasswordIsNotExpired
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! config('filament-password-rotation.enabled')) {
+        if (! config('laravel-password-rotation.enabled')) {
             return $next($request);
         }
 

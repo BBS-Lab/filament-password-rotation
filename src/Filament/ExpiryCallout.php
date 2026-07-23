@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BBSLab\FilamentPasswordRotation\Filament;
 
-use BBSLab\FilamentPasswordRotation\Contracts\MustRotatePassword;
+use BBSLab\LaravelPasswordRotation\Contracts\MustRotatePassword;
 use Filament\Facades\Filament;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\View as ViewFactory;

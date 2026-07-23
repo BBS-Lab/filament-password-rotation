@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BBSLab\FilamentPasswordRotation\Tests;
 
 use BBSLab\FilamentPasswordRotation\FilamentPasswordRotationServiceProvider;
+use BBSLab\LaravelPasswordRotation\LaravelPasswordRotationServiceProvider;
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
 use BladeUI\Icons\BladeIconsServiceProvider;
 use Filament\Actions\ActionsServiceProvider;
@@ -50,6 +51,7 @@ abstract class TestCase extends Orchestra
             BladeHeroiconsServiceProvider::class,
             BladeCaptureDirectiveServiceProvider::class,
             AdminPanelProvider::class,
+            LaravelPasswordRotationServiceProvider::class,
             FilamentPasswordRotationServiceProvider::class,
         ];
     }
@@ -69,11 +71,19 @@ abstract class TestCase extends Orchestra
             'database' => ':memory:',
             'prefix' => '',
         ]);
+
+        // Pin the package default so the suite tests 'change' mode deterministically,
+        // immune to the workbench .env (whose PASSWORD_ROTATION_EXPIRY_ACTION may be
+        // flipped to 'reset' for the `composer serve` demo). Reset-mode tests opt in
+        // explicitly with config(['filament-password-rotation.expiry_action' => 'reset']).
+        $app['config']->set('filament-password-rotation.expiry_action', 'change');
     }
 
     protected function defineDatabaseMigrations(): void
     {
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        // The password_histories table is owned and auto-run by the base package
+        // (LaravelPasswordRotationServiceProvider::runsMigrations). Only the
+        // workbench user-column migration is local to this package.
         $this->loadMigrationsFrom(__DIR__.'/../workbench/database/migrations');
     }
 }

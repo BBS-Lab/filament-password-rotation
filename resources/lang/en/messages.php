@@ -18,6 +18,12 @@ return [
 
     'updated' => 'Your password has been updated.',
 
+    'reset_intro' => 'Your password has expired. We will email you a secure link to set a new one.',
+
+    'reset_submit' => 'Send password reset link',
+
+    'reset_sent' => 'We have emailed you a password reset link.',
+
     'warning_heading' => 'Password expiring soon',
 
     'warning' => 'Your password expires on :date. Please update it soon.',

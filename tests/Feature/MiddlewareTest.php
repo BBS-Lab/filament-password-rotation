@@ -38,7 +38,7 @@ function expiredUser(): User
 }
 
 it('is inert when the feature is disabled', function (): void {
-    config(['filament-password-rotation.enabled' => false]);
+    config(['laravel-password-rotation.enabled' => false]);
 
     $this->actingAs(expiredUser());
 
@@ -53,7 +53,7 @@ it('ignores users that do not implement the interface', function (): void {
 });
 
 it('lets a still-valid user through', function (): void {
-    config(['filament-password-rotation.warn_days' => 0]); // keep the warn path out of scope
+    config(['laravel-password-rotation.warn_days' => 0]); // keep the warn path out of scope
 
     $user = UserFactory::new()->create(['password_changed_at' => now()]);
     $this->actingAs(User::query()->findOrFail($user->getKey()));

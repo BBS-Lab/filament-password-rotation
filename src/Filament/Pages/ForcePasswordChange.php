@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace BBSLab\FilamentPasswordRotation\Filament\Pages;
 
-use BBSLab\FilamentPasswordRotation\Rules\PasswordNotReused;
+use BBSLab\LaravelPasswordRotation\Rules\PasswordNotReused;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -19,9 +20,11 @@ use Filament\Schemas\Components\EmbeddedSchema;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password as PasswordBroker;
 use Illuminate\Validation\Rules\Password;
 use LogicException;
 use SensitiveParameter;
@@ -80,7 +83,9 @@ class ForcePasswordChange extends Page
 
     public function getSubheading(): string|Htmlable|null
     {
-        return __('filament-password-rotation::messages.intro');
+        return __($this->isResetMode()
+            ? 'filament-password-rotation::messages.reset_intro'
+            : 'filament-password-rotation::messages.intro');
     }
 
     public function getUser(): Authenticatable&Model
@@ -106,9 +111,15 @@ class ForcePasswordChange extends Page
 
     public function form(Schema $schema): Schema
     {
+        // The reset flow carries no fields: the card is just the explanatory
+        // subheading and a single "send reset link" button (see getFormActions).
+        if ($this->isResetMode()) {
+            return $schema->components([]);
+        }
+
         $components = [];
 
-        if (config('filament-password-rotation.require_current_password')) {
+        if (config('laravel-password-rotation.require_current_password')) {
             $components[] = $this->getCurrentPasswordFormComponent();
         }
 
@@ -120,10 +131,12 @@ class ForcePasswordChange extends Page
 
     public function content(Schema $schema): Schema
     {
+        $handler = $this->isResetMode() ? 'sendReset' : 'save';
+
         return $schema->components([
             Form::make([EmbeddedSchema::make('form')])
                 ->id('form')
-                ->livewireSubmitHandler('save')
+                ->livewireSubmitHandler($handler)
                 ->footer([
                     Actions::make($this->getFormActions())
                         ->fullWidth(),
@@ -160,6 +173,59 @@ class ForcePasswordChange extends Page
         $this->redirect(Filament::getUrl(), navigate: false);
     }
 
+    public function sendReset(): void
+    {
+        // Capture the user before logging out; getUser() reads the guard, which
+        // is null once we sign them out below.
+        $user = $this->getUser();
+
+        assert($user instanceof CanResetPassword);
+
+        $panel = Filament::getCurrentOrDefaultPanel();
+
+        // The emailed link points at the panel's own reset page, so that page
+        // must exist. Fail loudly rather than send a link to a missing route
+        // (the default broker would build route('password.reset'), which a
+        // Filament app does not define).
+        if (! $panel instanceof Panel || ! $panel->hasPasswordReset()) {
+            throw new LogicException(
+                'The "reset" expiry action requires Filament password reset to be enabled on the panel — add ->passwordReset() to the panel.'
+            );
+        }
+
+        // Mirror Filament's own RequestPasswordReset: send through the panel's
+        // broker with a callback that points the notification at the panel's
+        // reset route.
+        PasswordBroker::broker($panel->getAuthPasswordBroker())->sendResetLink(
+            ['email' => $user->getEmailForPasswordReset()],
+            function (CanResetPassword $notifiable, #[SensitiveParameter] string $token) use ($panel): void {
+                $notification = app(ResetPasswordNotification::class, ['token' => $token]);
+                $notification->url = $panel->getResetPasswordUrl($token, $notifiable);
+                $notifiable->notify($notification);
+            },
+        );
+
+        // The emailed reset link is a guest route, so drop the panel session to
+        // make it reachable without an authenticated redirect back here.
+        Filament::auth()->logout();
+        session()->invalidate();
+        session()->regenerateToken();
+
+        // Sent after the token regenerate so the flashed notification lives in
+        // the fresh session and survives the redirect onto the login page.
+        Notification::make()
+            ->success()
+            ->title(__('filament-password-rotation::messages.reset_sent'))
+            ->send();
+
+        $this->redirect(Filament::getLoginUrl(), navigate: false);
+    }
+
+    protected function isResetMode(): bool
+    {
+        return config('filament-password-rotation.expiry_action') === 'reset';
+    }
+
     protected function getCurrentPasswordFormComponent(): Component
     {
         return TextInput::make('currentPassword')
@@ -186,10 +252,10 @@ class ForcePasswordChange extends Page
             ->same('passwordConfirmation')
             ->rule(static fn (): Closure => static function (string $attribute, mixed $value, Closure $fail) use ($user): void {
                 if (is_string($value) && Hash::check($value, $user->getAuthPassword())) {
-                    $fail((string) trans('filament-password-rotation::validation.different'));
+                    $fail((string) trans('laravel-password-rotation::validation.different'));
                 }
             })
-            ->rule(new PasswordNotReused($user), (int) config('filament-password-rotation.history_count') > 0)
+            ->rule(new PasswordNotReused($user), (int) config('laravel-password-rotation.history_count') > 0)
             ->dehydrateStateUsing(fn (#[SensitiveParameter] string $state): string => Hash::make($state));
     }
 
@@ -209,6 +275,14 @@ class ForcePasswordChange extends Page
      */
     protected function getFormActions(): array
     {
+        if ($this->isResetMode()) {
+            return [
+                Action::make('sendReset')
+                    ->label(__('filament-password-rotation::messages.reset_submit'))
+                    ->submit('sendReset'),
+            ];
+        }
+
         return [
             Action::make('save')
                 ->label(__('filament-password-rotation::messages.submit'))

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Workbench\App\Models;
 
-use BBSLab\FilamentPasswordRotation\Concerns\RotatesPassword;
-use BBSLab\FilamentPasswordRotation\Contracts\MustRotatePassword;
+use BBSLab\LaravelPasswordRotation\Concerns\RotatesPassword;
+use BBSLab\LaravelPasswordRotation\Contracts\MustRotatePassword;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

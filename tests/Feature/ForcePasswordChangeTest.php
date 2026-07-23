@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use BBSLab\FilamentPasswordRotation\Events\PasswordRotated;
 use BBSLab\FilamentPasswordRotation\Filament\Pages\ForcePasswordChange;
-use BBSLab\FilamentPasswordRotation\Models\PasswordHistory;
+use BBSLab\LaravelPasswordRotation\Events\PasswordRotated;
+use BBSLab\LaravelPasswordRotation\Models\PasswordHistory;
 use Filament\Facades\Filament;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Event;
@@ -158,8 +158,8 @@ it('requires the current password field when configured', function (): void {
 it('rejects a new password equal to the current one', function (): void {
     // History off, so the "different from current" closure is the only guard.
     config([
-        'filament-password-rotation.history_count' => 0,
-        'filament-password-rotation.require_current_password' => false,
+        'laravel-password-rotation.history_count' => 0,
+        'laravel-password-rotation.require_current_password' => false,
     ]);
 
     $user = rotatable();
@@ -179,8 +179,8 @@ it('rejects a new password equal to the current one', function (): void {
 
 it('rejects reusing a previous password when history is enabled', function (): void {
     config([
-        'filament-password-rotation.history_count' => 3,
-        'filament-password-rotation.require_current_password' => false,
+        'laravel-password-rotation.history_count' => 3,
+        'laravel-password-rotation.require_current_password' => false,
     ]);
 
     $user = rotatable(); // history contains 'password'
@@ -212,8 +212,8 @@ it('rejects reusing the previous password when history keeps a single entry', fu
     // rule must still be registered (> 0), so a bumped threshold would let the
     // immediately-previous password through.
     config([
-        'filament-password-rotation.history_count' => 1,
-        'filament-password-rotation.require_current_password' => false,
+        'laravel-password-rotation.history_count' => 1,
+        'laravel-password-rotation.require_current_password' => false,
     ]);
 
     $user = rotatable();
@@ -239,8 +239,8 @@ it('rejects reusing the previous password when history keeps a single entry', fu
 
 it('rotates without the current password when not required and history is disabled', function (): void {
     config([
-        'filament-password-rotation.history_count' => 0,
-        'filament-password-rotation.require_current_password' => false,
+        'laravel-password-rotation.history_count' => 0,
+        'laravel-password-rotation.require_current_password' => false,
     ]);
 
     $user = rotatable(); // created under history_count 0: no history recorded

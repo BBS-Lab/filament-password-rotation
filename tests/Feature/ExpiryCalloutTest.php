@@ -11,10 +11,10 @@ beforeEach(function (): void {
     Filament::setCurrentPanel('admin');
 
     config([
-        'filament-password-rotation.enabled' => true,
-        'filament-password-rotation.days' => 90,
-        'filament-password-rotation.warn_days' => 7,
-        'filament-password-rotation.force_on_first_login' => true,
+        'laravel-password-rotation.enabled' => true,
+        'laravel-password-rotation.days' => 90,
+        'laravel-password-rotation.warn_days' => 7,
+        'laravel-password-rotation.force_on_first_login' => true,
     ]);
 });
 
@@ -38,14 +38,14 @@ it('renders nothing when nobody is authenticated', function (): void {
 });
 
 it('renders nothing when the feature is disabled', function (): void {
-    config(['filament-password-rotation.enabled' => false]);
+    config(['laravel-password-rotation.enabled' => false]);
     $this->actingAs(UserFactory::new()->create(['password_changed_at' => now()->subDays(85)]));
 
     expect(callout())->toBeNull();
 });
 
 it('renders nothing when the warning window is disabled', function (): void {
-    config(['filament-password-rotation.warn_days' => 0]);
+    config(['laravel-password-rotation.warn_days' => 0]);
     $this->actingAs(UserFactory::new()->create(['password_changed_at' => now()->subDays(85)]));
 
     expect(callout())->toBeNull();
@@ -88,7 +88,7 @@ it('renders nothing the day before the warning window opens', function (): void 
 });
 
 it('renders nothing when the expiry date cannot be determined', function (): void {
-    config(['filament-password-rotation.force_on_first_login' => false]);
+    config(['laravel-password-rotation.force_on_first_login' => false]);
 
     $user = UserFactory::new()->create();
     $user->forceFill(['password_changed_at' => null])->saveQuietly();

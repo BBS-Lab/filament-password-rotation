@@ -14,9 +14,9 @@ beforeEach(function (): void {
     Filament::setCurrentPanel('admin');
 
     config([
-        'filament-password-rotation.enabled' => true,
-        'filament-password-rotation.days' => 90,
-        'filament-password-rotation.warn_days' => 7,
+        'laravel-password-rotation.enabled' => true,
+        'laravel-password-rotation.days' => 90,
+        'laravel-password-rotation.warn_days' => 7,
     ]);
 });
 
