@@ -2,6 +2,26 @@
 
 All notable changes to `bbs-lab/filament-password-rotation` will be documented in this file.
 
+## v2.0.0 - 2026-07-23
+
+**Breaking release.** The generic password-rotation domain now lives in the shared base package [`bbs-lab/laravel-password-rotation`](https://github.com/BBS-Lab/laravel-password-rotation), and this package builds its Filament layer on top. Please read the [upgrade guide](UPGRADE.md).
+
+### ⚠️ Breaking changes
+
+- **Rotation config keys moved** from `filament-password-rotation.*` to `laravel-password-rotation.*` (same nine keys, same env vars) — republish the base config. The Filament-specific keys (`slug`, `expiry_action`) stay in `config/filament-password-rotation.php`.
+- The `password_histories` table is now owned and **auto-migrated** by the base package; the user-column migration publish tag is now `laravel-password-rotation-user-migration`.
+- Overridden `validation.*` translations now live under the `laravel-password-rotation::` namespace.
+
+### ✨ New: `expiry_action`
+
+- `change` (default) — the in-panel forced change-password form, unchanged.
+- `reset` — a single "send reset link" button that emails a Filament password-reset link, signs the user out and shows a toast. Requires the model to implement `CanResetPassword` and the panel to enable `->passwordReset()`.
+
+### 🧰 Under the hood
+
+- Depends on `bbs-lab/laravel-password-rotation: ^1.1`; the duplicated generic classes were removed.
+- 100% line coverage, PHPStan level 8, CI across Filament 4 & 5 × Laravel 11/12/13.
+
 ## v1.0.0 - 2026-07-22
 
 First stable release of **Filament Password Rotation** — force any authenticatable implementing `MustRotatePassword` to rotate its password every N days. When the password expires, a [Filament](https://filamentphp.com) panel middleware redirects the logged-in user to a native, full-page Filament change-password screen. Light, secure, and enabled with a single `->plugin()` line.
@@ -31,6 +51,7 @@ PHP `^8.2` · Filament `^4.0 || ^5.0` · Laravel `^11.0 || ^12.0 || ^13.0`
 ```bash
 composer require bbs-lab/filament-password-rotation
 
+
 ```
 ```php
 use BBSLab\FilamentPasswordRotation\Concerns\RotatesPassword;
@@ -41,6 +62,7 @@ class User extends Authenticatable implements MustRotatePassword
 {
     use RotatesPassword;
 }
+
 
 ```
 ```php
@@ -53,5 +75,6 @@ public function panel(Panel $panel): Panel
         // ...
         ->plugin(FilamentPasswordRotationPlugin::make());
 }
+
 
 ```
