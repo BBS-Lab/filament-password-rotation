@@ -6,6 +6,7 @@ namespace BBSLab\FilamentPasswordRotation\Http\Middleware;
 
 use BBSLab\FilamentPasswordRotation\Filament\Pages\ForcePasswordChange;
 use BBSLab\LaravelPasswordRotation\Contracts\MustRotatePassword;
+use BBSLab\LaravelPasswordRotation\PasswordRotationManager;
 use Closure;
 use Filament\Facades\Filament;
 use Filament\Panel;
@@ -37,7 +38,10 @@ class EnsurePasswordIsNotExpired
             return $next($request);
         }
 
-        if ($user->passwordHasExpired()) {
+        // The bypass (e.g. SSO users whose password lives in the identity
+        // provider) is a host-registered escape hatch, checked only when we would
+        // otherwise force the change.
+        if ($user->passwordHasExpired() && ! app(PasswordRotationManager::class)->shouldBypass($request, $user)) {
             return redirect()->to(ForcePasswordChange::getUrl(panel: $panel->getId()));
         }
 

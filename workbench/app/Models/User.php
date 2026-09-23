@@ -28,6 +28,7 @@ class User extends Authenticatable implements FilamentUser, MustRotatePassword
         'name',
         'email',
         'password',
+        'is_sso',
     ];
 
     /**
@@ -51,6 +52,7 @@ class User extends Authenticatable implements FilamentUser, MustRotatePassword
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_sso' => 'boolean',
         ];
     }
 }

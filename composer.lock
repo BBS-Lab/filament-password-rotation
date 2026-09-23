@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d9189994012baae9e5050f38312114fd",
+    "content-hash": "d6eb1dfb5beb929d9410c8b3d46f56ba",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -73,16 +73,16 @@
         },
         {
             "name": "bbs-lab/laravel-password-rotation",
-            "version": "v1.1.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/BBS-Lab/laravel-password-rotation.git",
-                "reference": "527037e91685fbef2ec69367484c3b6bc0ae4c87"
+                "reference": "5d9f56b8a0f3ba465be37de455225a35789b25e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BBS-Lab/laravel-password-rotation/zipball/527037e91685fbef2ec69367484c3b6bc0ae4c87",
-                "reference": "527037e91685fbef2ec69367484c3b6bc0ae4c87",
+                "url": "https://api.github.com/repos/BBS-Lab/laravel-password-rotation/zipball/5d9f56b8a0f3ba465be37de455225a35789b25e5",
+                "reference": "5d9f56b8a0f3ba465be37de455225a35789b25e5",
                 "shasum": ""
             },
             "require": {
@@ -143,7 +143,7 @@
                 "issues": "https://github.com/BBS-Lab/laravel-password-rotation/issues",
                 "source": "https://github.com/BBS-Lab/laravel-password-rotation"
             },
-            "time": "2026-07-23T15:05:32+00:00"
+            "time": "2026-09-23T16:21:38+00:00"
         },
         {
             "name": "blade-ui-kit/blade-heroicons",

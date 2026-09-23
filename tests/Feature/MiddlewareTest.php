@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use BBSLab\FilamentPasswordRotation\Http\Middleware\EnsurePasswordIsNotExpired;
+use BBSLab\LaravelPasswordRotation\Facades\PasswordRotation;
 use Filament\Facades\Filament;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -84,4 +85,20 @@ it('never traps the user on the way out (logout)', function (): void {
     $request = requestForRoute('filament.admin.auth.logout', '/admin/logout');
 
     expect(runMiddleware($request)->getContent())->toBe('next');
+});
+
+it('lets an expired user through when a bypass callback returns true', function (): void {
+    PasswordRotation::bypass(fn (): bool => true);
+
+    $this->actingAs(expiredUser());
+
+    expect(runMiddleware()->getContent())->toBe('next');
+});
+
+it('still redirects an expired user when the bypass callback returns false', function (): void {
+    PasswordRotation::bypass(fn (): bool => false);
+
+    $this->actingAs(expiredUser());
+
+    expect(runMiddleware())->toBeInstanceOf(RedirectResponse::class);
 });
