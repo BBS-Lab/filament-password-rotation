@@ -2,6 +2,16 @@
 
 All notable changes to `bbs-lab/filament-password-rotation` will be documented in this file.
 
+## v2.1.1 - 2026-09-23
+
+Patch release — CI/static-analysis only, **no runtime change**. Fully compatible with `v2.1.0`.
+
+### 🐛 Fixed
+
+- **PHPStan on the latest larastan (3.12).** larastan 3.12 enforces a `view-string` argument on `View::make()`; the expiry-callout view is registered under a runtime package namespace, so it can't be resolved statically. The (valid) view name is now pinned to `view-string` — a preemptive fix before a Dependabot larastan bump.
+
+**Full Changelog**: https://github.com/BBS-Lab/filament-password-rotation/compare/v2.1.0...v2.1.1
+
 ## v2.1.2 - 2026-09-23
 
 Patch release — CI/static-analysis only, **no runtime change**. Fully compatible with `v2.1.x`.
@@ -74,6 +84,7 @@ composer require bbs-lab/filament-password-rotation
 
 
 
+
 ```
 ```php
 use BBSLab\FilamentPasswordRotation\Concerns\RotatesPassword;
@@ -84,6 +95,7 @@ class User extends Authenticatable implements MustRotatePassword
 {
     use RotatesPassword;
 }
+
 
 
 
@@ -99,6 +111,7 @@ public function panel(Panel $panel): Panel
         // ...
         ->plugin(FilamentPasswordRotationPlugin::make());
 }
+
 
 
 
