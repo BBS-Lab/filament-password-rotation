@@ -26,7 +26,12 @@ class ExpiryCallout
             return null;
         }
 
-        return ViewFactory::make('filament-password-rotation::expiry-callout', [
+        // The package view namespace is registered at runtime, so PHPStan cannot
+        // resolve it to a view-string; the view genuinely exists.
+        /** @var view-string $view */
+        $view = 'filament-password-rotation::expiry-callout';
+
+        return ViewFactory::make($view, [
             'expiresAt' => $user->passwordExpiresAt(),
         ]);
     }
