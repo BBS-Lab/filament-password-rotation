@@ -160,6 +160,24 @@ layout, so it looks native without any extra build step. The page route and the 
 are skipped so the redirect never loops. On a successful update the user is sent back to the panel
 dashboard with a success Filament notification.
 
+### Bypassing rotation (e.g. SSO users)
+
+Some users must never be forced through the change page — SSO users, for instance, whose password
+lives in the identity provider. Register a bypass callback via the base package's `PasswordRotation`
+facade in a service provider's `boot()`; the panel middleware honours it before redirecting:
+
+```php
+use BBSLab\LaravelPasswordRotation\Facades\PasswordRotation;
+use Illuminate\Http\Request;
+
+PasswordRotation::bypass(
+    fn (Request $request) => $request->hasSession() && $request->session()->get('sso') === true,
+);
+```
+
+Register the callback in code, **not** in config (a closure breaks `config:cache`), and guard
+`hasSession()` before reading the session. Requires `bbs-lab/laravel-password-rotation` `^1.2`.
+
 ### Reuse prevention
 
 When `history_count > 0`, every password change is hashed and stored in the polymorphic
