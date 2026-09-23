@@ -2,6 +2,16 @@
 
 All notable changes to `bbs-lab/filament-password-rotation` will be documented in this file.
 
+## v2.1.0 - 2026-09-23
+
+Honour the base package's `PasswordRotation::bypass()` hook so specific requests can skip the forced password change — e.g. **SSO users** whose password is owned by the identity provider. Backward compatible. Requires `bbs-lab/laravel-password-rotation ^1.2`.
+
+### ✨ Added
+
+- **Bypass support in the panel middleware** — `EnsurePasswordIsNotExpired` consults `PasswordRotation::bypass()` before redirecting an expired user; any callback returning `true` lets the request through. The workbench demoes it with a seeded `is_sso` account (`sso@filament.test` reaches the panel despite being expired).
+
+**Full Changelog**: https://github.com/BBS-Lab/filament-password-rotation/compare/v2.0.0...v2.1.0
+
 ## v2.0.0 - 2026-07-23
 
 **Breaking release.** The generic password-rotation domain now lives in the shared base package [`bbs-lab/laravel-password-rotation`](https://github.com/BBS-Lab/laravel-password-rotation), and this package builds its Filament layer on top. Please read the [upgrade guide](UPGRADE.md).
@@ -52,6 +62,7 @@ PHP `^8.2` · Filament `^4.0 || ^5.0` · Laravel `^11.0 || ^12.0 || ^13.0`
 composer require bbs-lab/filament-password-rotation
 
 
+
 ```
 ```php
 use BBSLab\FilamentPasswordRotation\Concerns\RotatesPassword;
@@ -62,6 +73,7 @@ class User extends Authenticatable implements MustRotatePassword
 {
     use RotatesPassword;
 }
+
 
 
 ```
@@ -75,6 +87,7 @@ public function panel(Panel $panel): Panel
         // ...
         ->plugin(FilamentPasswordRotationPlugin::make());
 }
+
 
 
 ```
