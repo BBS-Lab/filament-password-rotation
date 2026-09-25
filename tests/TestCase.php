@@ -24,6 +24,7 @@ use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
 use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 use Workbench\App\Providers\AdminPanelProvider;
+use Workbench\App\Providers\RootPanelProvider;
 
 abstract class TestCase extends Orchestra
 {
@@ -51,6 +52,7 @@ abstract class TestCase extends Orchestra
             BladeHeroiconsServiceProvider::class,
             BladeCaptureDirectiveServiceProvider::class,
             AdminPanelProvider::class,
+            RootPanelProvider::class,
             LaravelPasswordRotationServiceProvider::class,
             FilamentPasswordRotationServiceProvider::class,
         ];
