@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use BBSLab\FilamentPasswordRotation\Filament\Pages\ForcePasswordChange;
 use BBSLab\FilamentPasswordRotation\Http\Middleware\EnsurePasswordIsNotExpired;
 use BBSLab\LaravelPasswordRotation\Facades\PasswordRotation;
 use Filament\Facades\Filament;
@@ -83,6 +84,24 @@ it('never traps the user on the way out (logout)', function (): void {
     $this->actingAs(expiredUser());
 
     $request = requestForRoute('filament.admin.auth.logout', '/admin/logout');
+
+    expect(runMiddleware($request)->getContent())->toBe('next');
+});
+
+it('works for a panel mounted at the root path ("/")', function (): void {
+    // The guards are route-name based, so a panel with no path prefix behaves the
+    // same as one mounted under a sub-path.
+    Filament::setCurrentPanel('root');
+    $this->actingAs(expiredUser());
+
+    // Expired user on a normal page → redirected to the root panel's change page.
+    $response = runMiddleware(Request::create('/dashboard'));
+
+    expect($response)->toBeInstanceOf(RedirectResponse::class)
+        ->and($response->getTargetUrl())->toContain('password/rotate');
+
+    // The change-page route itself is allow-listed (never trapped/looped).
+    $request = requestForRoute(ForcePasswordChange::getRouteName(Filament::getPanel('root')), '/password/rotate');
 
     expect(runMiddleware($request)->getContent())->toBe('next');
 });
