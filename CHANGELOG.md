@@ -14,15 +14,11 @@ Patch release. Backward compatible.
 
 **Full Changelog**: https://github.com/BBS-Lab/filament-password-rotation/compare/v2.1.2...v2.1.3
 
-## v2.1.2 - 2026-09-25
+## v2.1.2 - 2026-09-23
 
-Patch release. Backward compatible.
-
-### 🐛 Fixed
-
-- **Chrome autofill** — a hidden `username` anchor on the forced-change form (with the existing `current-password`/`new-password` tokens) stops Chrome's saved-password autofill and strong-password generator from overwriting the current-password field. The reveal (eye) toggle already ships via Filament's `->revealable()`.
-
-**Full Changelog**: https://github.com/BBS-Lab/filament-password-rotation/compare/v2.1.1...v2.1.2
+Re-published the larastan 3.12 view-string fix already shipped in v2.1.1 (same
+code). This tag is immutable on Packagist; the Chrome-autofill fix originally
+intended here shipped in v2.1.3 instead.
 
 ## v2.1.1 - 2026-09-23
 
