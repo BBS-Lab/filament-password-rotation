@@ -2,6 +2,16 @@
 
 All notable changes to `bbs-lab/filament-password-rotation` will be documented in this file.
 
+## v2.1.2 - 2026-09-25
+
+Patch release. Backward compatible.
+
+### 🐛 Fixed
+
+- **Chrome autofill** — a hidden `username` anchor on the forced-change form (with the existing `current-password`/`new-password` tokens) stops Chrome's saved-password autofill and strong-password generator from overwriting the current-password field. The reveal (eye) toggle already ships via Filament's `->revealable()`.
+
+**Full Changelog**: https://github.com/BBS-Lab/filament-password-rotation/compare/v2.1.1...v2.1.2
+
 ## v2.1.1 - 2026-09-23
 
 Patch release — CI/static-analysis only, **no runtime change**. Fully compatible with `v2.1.0`.
@@ -75,6 +85,7 @@ composer require bbs-lab/filament-password-rotation
 
 
 
+
 ```
 ```php
 use BBSLab\FilamentPasswordRotation\Concerns\RotatesPassword;
@@ -85,6 +96,7 @@ class User extends Authenticatable implements MustRotatePassword
 {
     use RotatesPassword;
 }
+
 
 
 
@@ -101,6 +113,7 @@ public function panel(Panel $panel): Panel
         // ...
         ->plugin(FilamentPasswordRotationPlugin::make());
 }
+
 
 
 
