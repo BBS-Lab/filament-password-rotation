@@ -18,6 +18,7 @@ use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\EmbeddedSchema;
 use Filament\Schemas\Components\Form;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
@@ -117,7 +118,12 @@ class ForcePasswordChange extends Page
             return $schema->components([]);
         }
 
-        $components = [];
+        // A hidden username anchor so Chrome's password manager treats this as a
+        // change-password form for a known account and does not overwrite the
+        // current-password field when generating a password (see the view).
+        $components = [
+            View::make('filament-password-rotation::username-anchor'),
+        ];
 
         if (config('laravel-password-rotation.require_current_password')) {
             $components[] = $this->getCurrentPasswordFormComponent();
