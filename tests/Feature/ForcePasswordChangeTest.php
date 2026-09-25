@@ -32,6 +32,14 @@ it('serves the forced-change page over HTTP', function (): void {
         ->assertSee(__('filament-password-rotation::messages.title'));
 });
 
+it('renders a hidden username anchor for password managers', function (): void {
+    $this->actingAs(rotatable());
+
+    $this->get(ForcePasswordChange::getUrl())
+        ->assertOk()
+        ->assertSee('autocomplete="username"', escape: false);
+});
+
 it('throws when the authenticated subject is not an Eloquent model', function (): void {
     $subject = new class implements Authenticatable
     {
